@@ -59,7 +59,7 @@ classifiers = [
 Repository = "https://github.com/michimussato/SSLGeneration"
 
 [project.scripts]
-pimo = "ThinkboxSoftware.ssl_gen:run"
+thinkbox-ssl-gen = "ThinkboxSoftware.ssl_gen.ssl_gen:run"
 
 [tool.setuptools]
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
