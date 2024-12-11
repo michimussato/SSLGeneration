@@ -354,6 +354,7 @@ def parse_args(args):
     parser.add_argument('--alt-name', help='Subject Alternative Name', action='append')
     parser.add_argument('--keys-dir', help='Directory that stores the key files')
     parser.add_argument('--passphrase', help='The passphrase with which to encrypt the output file (optional with --pfx)')
+    parser.add_argument('--days', help='The period of time during which this certificate is intended to be valid')
 
     return parser.parse_args(args)
 
@@ -383,16 +384,16 @@ def main(args):
         sslgen = SSLCertificateGenerator()
 
     if args.ca:
-        error=False
+        error = False
         if args.cert_name:
             print('Error: Certificate name was specified.  CA certificate is always named "ca"')
-            error=True
+            error = True
         if not args.cert_ou:
             print("Error: No OU specified")
-            error=True
+            error = True
         if not args.cert_org:
             print("Error: No organization specified")
-            error=True
+            error = True
         if error:
             exit(1)
         sslgen.gen_ca(cert_org=args.cert_org, cert_ou=args.cert_ou)
@@ -401,18 +402,30 @@ def main(args):
         if not args.cert_name:
             print("Error: No certificate name specified")
             exit(1)
-
-        sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=1)
+        if args.days:
+            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=1, days=int(args.days))
+        else:
+            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=1)
     elif args.server:
         if not args.cert_name:
             print("Error: No certificate name specified")
             exit(1)
-        sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=2, alt_names=args.alt_name)
+        if args.days:
+            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=2,
+                            alt_names=args.alt_name, days=int(args.days))
+        else:
+            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=2,
+                            alt_names=args.alt_name)
     elif args.client:
         if not args.cert_name:
             print("Error: No certificate name specified")
             exit(1)
-        sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=3, alt_names=args.alt_name)
+        if args.days:
+            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=3,
+                            alt_names=args.alt_name, days=int(args.days))
+        else:
+            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=3,
+                            alt_names=args.alt_name)
 
     elif args.pfx:
         if not args.cert_name:
@@ -420,9 +433,9 @@ def main(args):
             exit(1)
 
         if args.passphrase:
-            sslgen.gen_pfx( args.cert_name, args.passphrase )
+            sslgen.gen_pfx(args.cert_name, args.passphrase)
         else:
-            sslgen.gen_pfx( args.cert_name )
+            sslgen.gen_pfx(args.cert_name)
 
     elif args.revoke:
         if not args.cert_name:
@@ -446,4 +459,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-

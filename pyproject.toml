@@ -16,7 +16,7 @@ dynamic = ["version"]
 requires-python = ">= 3.9"
 # https://pypi.org/project/inky/
 dependencies = [
-    "pyopenssl==17.5.0"
+    "pyopenssl==23.2.0"
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
