@@ -340,6 +340,24 @@ class SSLCertificateGenerator:
 def parse_args(args):
 
     parser = argparse.ArgumentParser(description='SSL Certificate Generator')
+
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        dest="loglevel",
+        help="set loglevel to INFO",
+        action="store_const",
+        const=logging.INFO,
+    )
+    parser.add_argument(
+        "-vv",
+        "--very-verbose",
+        dest="loglevel",
+        help="set loglevel to DEBUG",
+        action="store_const",
+        const=logging.DEBUG,
+    )
+
     arg_group = parser.add_mutually_exclusive_group()
     arg_group.add_argument('--ca', action='store_true', help='Generate a CA certificate')
     arg_group.add_argument('--intermediate-ca', action='store_true', help='Generate an intermediate ca certificate')
@@ -396,36 +414,72 @@ def main(args):
             error = True
         if error:
             exit(1)
-        sslgen.gen_ca(cert_org=args.cert_org, cert_ou=args.cert_ou)
+        sslgen.gen_ca(
+            cert_org=args.cert_org,
+            cert_ou=args.cert_ou
+        )
 
     elif args.intermediate_ca:
         if not args.cert_name:
             print("Error: No certificate name specified")
             exit(1)
         if args.days:
-            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=1, days=int(args.days))
+            sslgen.gen_cert(
+                args.cert_name,
+                cert_org=args.cert_org,
+                cert_ou=args.cert_ou,
+                usage=1,
+                days=int(args.days)
+            )
         else:
-            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=1)
+            sslgen.gen_cert(
+                args.cert_name,
+                cert_org=args.cert_org,
+                cert_ou=args.cert_ou,
+                usage=1
+            )
     elif args.server:
         if not args.cert_name:
             print("Error: No certificate name specified")
             exit(1)
         if args.days:
-            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=2,
-                            alt_names=args.alt_name, days=int(args.days))
+            sslgen.gen_cert(
+                args.cert_name,
+                cert_org=args.cert_org,
+                cert_ou=args.cert_ou,
+                usage=2,
+                alt_names=args.alt_name,
+                days=int(args.days)
+            )
         else:
-            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=2,
-                            alt_names=args.alt_name)
+            sslgen.gen_cert(
+                args.cert_name,
+                cert_org=args.cert_org,
+                cert_ou=args.cert_ou,
+                usage=2,
+                alt_names=args.alt_name
+            )
     elif args.client:
         if not args.cert_name:
             print("Error: No certificate name specified")
             exit(1)
         if args.days:
-            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=3,
-                            alt_names=args.alt_name, days=int(args.days))
+            sslgen.gen_cert(
+                args.cert_name,
+                cert_org=args.cert_org,
+                cert_ou=args.cert_ou,
+                usage=3,
+                alt_names=args.alt_name,
+                days=int(args.days)
+            )
         else:
-            sslgen.gen_cert(args.cert_name, cert_org=args.cert_org, cert_ou=args.cert_ou, usage=3,
-                            alt_names=args.alt_name)
+            sslgen.gen_cert(
+                args.cert_name,
+                cert_org=args.cert_org,
+                cert_ou=args.cert_ou,
+                usage=3,
+                alt_names=args.alt_name
+            )
 
     elif args.pfx:
         if not args.cert_name:
@@ -450,7 +504,7 @@ def main(args):
         print("Error: Certificate type must be specified using [--ca|--server|--client|--pfx]")
         exit(1)
 
-sys.exit(0)
+    sys.exit(0)
 
 
 def run():
