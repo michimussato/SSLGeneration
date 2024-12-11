@@ -60,54 +60,45 @@ class SSLCertificateGenerator:
         return req
 
     def _write_key_to_file(self, key, filepath):
-        key_file = open(filepath, 'w')
-        key_file.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, key).decode("utf-8"))
-        key_file.close()
+        with open(filepath, 'w') as key_file:
+            key_file.write(crypto.dump_privatekey(crypto.FILETYPE_PEM, key).decode("utf-8"))
 
     def _load_key_from_file(self, filepath):
-        key_file = open(filepath, 'r')
-        key = crypto.load_privatekey(crypto.FILETYPE_PEM, key_file.read())
-        key_file.close()
+        with open(filepath, 'r') as key_file:
+            key = crypto.load_privatekey(crypto.FILETYPE_PEM, key_file.read())
         return key
 
     def _write_cert_to_file(self, cert, filepath):
-        cert_file = open(filepath, 'w')
-        cert_file.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8"))
-        cert_file.close()
+        with open(filepath, 'w') as cert_file:
+            cert_file.write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert).decode("utf-8"))
 
     def _load_cert_from_file(self, filepath):
-        cert_file = open(filepath, 'r')
-        cert = crypto.load_certificate(crypto.FILETYPE_PEM, cert_file.read())
-        cert_file.close()
+        with open(filepath, 'r') as cert_file:
+            cert = crypto.load_certificate(crypto.FILETYPE_PEM, cert_file.read())
         return cert
 
     def _write_csr_to_file(self, csr, filepath):
-        csr_file = open(filepath, 'w')
-        csr_file.write(crypto.dump_certificate_request(crypto.FILETYPE_PEM, csr).decode("utf-8"))
-        csr_file.close()
+        with open(filepath, 'w') as csr_file:
+            csr_file.write(crypto.dump_certificate_request(crypto.FILETYPE_PEM, csr).decode("utf-8"))
 
     def _load_csr_from_file(self, filepath):
-        csr_file = open(filepath, 'r')
-        csr = crypto.load_certificate_request(crypto.FILETYPE_PEM, csr_file.read())
-        csr_file.close()
+        with open(filepath, 'r') as csr_file:
+            csr = crypto.load_certificate_request(crypto.FILETYPE_PEM, csr_file.read())
         return csr
 
     def _write_pfx_to_file(self, pkcs12, filepath, passphrase=None):
-        pkcs12_file=open(filepath, 'wb')
-        pkcs12_file.write(pkcs12.export( passphrase ))
-        pkcs12_file.close()
+        with open(filepath, 'wb') as pkcs12_file:
+            pkcs12_file.write(pkcs12.export( passphrase ))
 
     def _write_crl_to_file(self, crl, ca_cert, ca_key, filepath):
         # Write CRL file
-        crl_file = open(filepath, 'w')
-        crl_file.write(crl.export(ca_cert, ca_key, days=365).decode("utf-8"))
-        crl_file.close()
+        with open(filepath, 'w') as crl_file:
+            crl_file.write(crl.export(ca_cert, ca_key, days=365).decode("utf-8"))
 
     def _load_crl_from_file(self, filepath):
         try:
-            crl_file = open(filepath, 'r')
-            crl = crypto.load_crl(crypto.FILETYPE_PEM, crl_file.read())
-            crl_file.close()
+            with open(filepath, 'r') as crl_file:
+                crl = crypto.load_crl(crypto.FILETYPE_PEM, crl_file.read())
         except IOError:
             # Create new CRL file if it doesn't exist
             crl = crypto.CRL()
@@ -168,9 +159,8 @@ class SSLCertificateGenerator:
             index_file.write(db_line)
 
         # Write updated serial file
-        serial_file = open(key_dir + '/serial', 'w')
-        serial_file.write(str(self.serial + 1))
-        serial_file.close()
+        with open(key_dir + '/serial', 'w') as serial_file:
+            serial_file.write(str(self.serial + 1))
 
         return cert
 
@@ -303,19 +293,16 @@ class SSLCertificateGenerator:
         self._write_crl_to_file(crl, ca_cert, ca_key, key_dir + '/crl.pem')
 
         # Update index file
-        index_file = open(key_dir + '/index.txt', 'r')
-        index_file_new = open(key_dir + '/index.txt.new', 'w')
+        with open(key_dir + '/index.txt', 'r') as index_file:
+            with open(key_dir + '/index.txt.new', 'w') as index_file_new:
 
-        for line in index_file.readlines():
-            line_split = re.split('\t', line)
-            if int(line_split[3], 16) == cert.get_serial_number():
-                new_line = 'R\t' + line_split[1] + '\t' + revoked.get_rev_date().decode("utf-8") + '\t' + line_split[3] + '\t' + line_split[4] + '\t' + line_split[5]
-                index_file_new.write(new_line)
-            else:
-                index_file_new.write(line)
-
-        index_file.close()
-        index_file_new.close()
+                for line in index_file.readlines():
+                    line_split = re.split('\t', line)
+                    if int(line_split[3], 16) == cert.get_serial_number():
+                        new_line = 'R\t' + line_split[1] + '\t' + revoked.get_rev_date().decode("utf-8") + '\t' + line_split[3] + '\t' + line_split[4] + '\t' + line_split[5]
+                        index_file_new.write(new_line)
+                    else:
+                        index_file_new.write(line)
 
         copy('keys/index.txt.new', 'keys/index.txt')
         remove('keys/index.txt.new')
