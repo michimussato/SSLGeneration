@@ -1,4 +1,16 @@
-
+<!-- TOC -->
+* [Thinkbox SSLGeneration](#thinkbox-sslgeneration)
+  * [Requirements](#requirements)
+  * [Installation](#installation)
+  * [Usage](#usage)
+    * [Prep](#prep)
+    * [First generate the CA file](#first-generate-the-ca-file)
+    * [Generate the server certificate](#generate-the-server-certificate)
+    * [Generate the client certificate](#generate-the-client-certificate)
+    * [Generate a pfx certificate](#generate-a-pfx-certificate)
+    * [Parse the pem file](#parse-the-pem-file)
+  * [Help](#help)
+<!-- TOC -->
 
 ---
 
